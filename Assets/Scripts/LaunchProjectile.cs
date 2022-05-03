@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class LaunchProjectile : MonoBehaviour
+public class LaunchProjectile : NetworkBehaviour
 {
+    [SerializeField] [SyncVar] public Transform projectTileLaunchPosition;
     public GameObject projectile;
     public float launchVelocity = 700f;
 
@@ -16,10 +18,22 @@ public class LaunchProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!hasAuthority) { return; }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            GameObject bullet = Instantiate(projectile, transform.position, transform.rotation);
-            bullet.GetComponent<Rigidbody>().AddForce(transform.forward * 100);
+            commandShootBullet();
         }
+    }
+
+    [Command]
+    private void commandShootBullet()
+    {
+        GameObject bullet = Instantiate(projectile,
+            projectTileLaunchPosition.position,
+            projectTileLaunchPosition.rotation);
+        bullet.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 100);
+        NetworkServer.Spawn(bullet);
+        
+        // RpcOnFire();
     }
 }
