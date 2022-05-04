@@ -1,4 +1,4 @@
-using Mirror;
+using FishNet.Object;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
@@ -23,7 +23,7 @@ public class Player : NetworkBehaviour
     [Client]
     void Update()
     {
-        if (!hasAuthority) { return; }
+    /*    if (!base.IsOwner) { return; }
         transform.Rotate(Vector3.up, updatedRotationDelta);
         updatedRotationDelta = 0.0f;
         transform.Translate(updatedTranslationDelta);
@@ -34,10 +34,10 @@ public class Player : NetworkBehaviour
        // transform.Rotate(Vector3.up, horizontal * rotationSpeed * Time.deltaTime);
       //  transform.Translate(vertical * Vector3.forward * movementSpeed * Time.deltaTime);
          serverRequestMovement(horizontal, vertical);
-  
+  */
     }
 
-    [Command]
+    [ServerRpc]
     private void serverRequestMovement(float horizontalMovement, float verticalMovement)
     {
         // TODO: Validate requested data.
@@ -47,10 +47,10 @@ public class Player : NetworkBehaviour
         RpcMovePlayer(translationDelta, rotationDelta);
     }
 
-    [ClientRpc]
+    [ObserversRpc]
     private void RpcMovePlayer(Vector3 translationDelta, float rotationDelta)
     {
-        if (!hasAuthority) { return; }
+        if (!base.IsOwner) { return; }
         updatedRotationDelta = rotationDelta;
         updatedTranslationDelta = translationDelta;
     }

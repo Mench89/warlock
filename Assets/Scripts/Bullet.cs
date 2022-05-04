@@ -1,10 +1,9 @@
-using Mirror;
+using FishNet.Object;
+using FishNet.Managing.Logging;
 using UnityEngine;
 
 public class Bullet : NetworkBehaviour
 {
-    [SyncVar]
-    public NetworkIdentity spawnedBy;
     // Automatically destroy the bullet after some time.
     private const float MAX_TIME_TO_LIVE = 5.0f;
     private const int DAMAGE = 1;
@@ -12,8 +11,9 @@ public class Bullet : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Magnus, collider component: " + NetworkClient.localPlayer.GetComponentInChildren<Collider>().ToString());
-        Physics.IgnoreCollision(GetComponent<Collider>(), NetworkClient.localPlayer.GetComponentInChildren<Collider>());
+        // TODO: Needs to fix collision ignore.....
+       // Debug.Log("Magnus, collider component: " + NetworkClient.localPlayer.GetComponentInChildren<Collider>().ToString());
+       // Physics.IgnoreCollision(GetComponent<Collider>(), NetworkClient.localPlayer.GetComponentInChildren<Collider>());
         Destroy(gameObject, MAX_TIME_TO_LIVE);
     }
 
@@ -25,7 +25,7 @@ public class Bullet : NetworkBehaviour
 
 
 
-    [ServerCallback]
+    [Server(Logging = LoggingType.Off)]
     void OnCollisionEnter(Collision collision)
     {
         GameObject otherObj = collision.gameObject;
@@ -43,7 +43,7 @@ public class Bullet : NetworkBehaviour
         }
     }
 
-    [ServerCallback]
+    [Server(Logging = LoggingType.Off)]
     void OnTriggerEnter(Collider collider)
     {
         GameObject otherObj = collider.gameObject;
