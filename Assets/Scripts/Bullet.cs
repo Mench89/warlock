@@ -12,8 +12,6 @@ public class Bullet : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Magnus, collider component: " + NetworkClient.localPlayer.GetComponentInChildren<Collider>().ToString());
-        Physics.IgnoreCollision(GetComponent<Collider>(), NetworkClient.localPlayer.GetComponentInChildren<Collider>());
         Destroy(gameObject, MAX_TIME_TO_LIVE);
     }
 

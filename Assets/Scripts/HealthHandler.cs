@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public interface IHealthEvents
 {
     void OnDeath();
 }
 
-public class HealthHandler : MonoBehaviour
+public class HealthHandler : NetworkBehaviour
 {
     [SerializeField] public int MaxHealth = 5;
+    [SyncVar] public bool IsDead;
 
     public delegate void OnDeath();
     public OnDeath OnDeathDelegate;
@@ -20,18 +20,10 @@ public class HealthHandler : MonoBehaviour
         private set;
     }
 
-    // TODO: Should we handle "Death" event here, or delegate it?
-
     // Start is called before the first frame update
     void Start()
     {
         CurrentHealth = MaxHealth;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void ApplyDamage(int damage)
@@ -41,6 +33,7 @@ public class HealthHandler : MonoBehaviour
         if (CurrentHealth <= 0) {
             CurrentHealth = 0;
             Debug.Log("Object is dead!");
+            IsDead = true;
             if (OnDeathDelegate != null)
             {
                 OnDeathDelegate();

@@ -6,19 +6,21 @@ using UnityEngine;
 public class LaunchProjectile : NetworkBehaviour
 {
     [SerializeField] [SyncVar] public Transform projectTileLaunchPosition;
+    [SerializeField] public Collider colliderToIgnore;
+    private HealthHandler healthHandler;
     public GameObject projectile;
     public float launchVelocity = 700f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        healthHandler = GetComponent<HealthHandler>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!hasAuthority) { return; }
+        if (!hasAuthority || healthHandler.IsDead) { return; }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             commandShootBullet();
@@ -32,6 +34,11 @@ public class LaunchProjectile : NetworkBehaviour
             projectTileLaunchPosition.position,
             projectTileLaunchPosition.rotation);
         bullet.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 100);
+        if (colliderToIgnore) {
+            Debug.Log("Magnus, collider component: " + colliderToIgnore.ToString());
+            Physics.IgnoreCollision(bullet.GetComponent<Collider>(), colliderToIgnore);
+        }
+        
         NetworkServer.Spawn(bullet);
         
         // RpcOnFire();

@@ -675,7 +675,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  healthHandler: {fileID: 0}
 --- !u!114 &4553649720851759314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -690,7 +689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -725,6 +724,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   projectTileLaunchPosition: {fileID: 4919868697167514446}
+  colliderToIgnore: {fileID: 2815487459390391217}
   projectile: {fileID: 3614962556155633297, guid: 6668381634ab9c44ab01d47b85b0da06, type: 3}
   launchVelocity: 700
 --- !u!114 &5124819460738509170
