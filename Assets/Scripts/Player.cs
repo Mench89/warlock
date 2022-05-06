@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
 
-public class Player : NetworkBehaviour
+public class Player : NetworkBehaviour, IDrownable
 {
     public string playerName;
     private HealthHandler healthHandler;
@@ -71,5 +71,11 @@ public class Player : NetworkBehaviour
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
         HasHandledDeath = true;
         //Destroy(gameObject);
+    }
+
+    public void OnDrown()
+    {
+        // TODO: Trigger respawn?
+        OnDeath();
     }
 }

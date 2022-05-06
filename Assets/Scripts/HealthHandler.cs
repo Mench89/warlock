@@ -8,7 +8,7 @@ public interface IHealthEvents
 
 public class HealthHandler : NetworkBehaviour
 {
-    [SerializeField] public int MaxHealth = 5;
+    [SerializeField] public int MaxHealth = 10;
     [SyncVar] public bool IsDead;
 
     public delegate void OnDeath();
