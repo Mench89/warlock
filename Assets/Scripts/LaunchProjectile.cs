@@ -9,7 +9,6 @@ public class LaunchProjectile : NetworkBehaviour
     [SerializeField] public Collider colliderToIgnore;
     private HealthHandler healthHandler;
     public GameObject projectile;
-    public float launchVelocity = 700f;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +32,7 @@ public class LaunchProjectile : NetworkBehaviour
         GameObject bullet = Instantiate(projectile,
             projectTileLaunchPosition.position,
             projectTileLaunchPosition.rotation);
-        bullet.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 100);
+        bullet.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 10);
         if (colliderToIgnore) {
             Debug.Log("Magnus, collider component: " + colliderToIgnore.ToString());
             Physics.IgnoreCollision(bullet.GetComponent<Collider>(), colliderToIgnore);

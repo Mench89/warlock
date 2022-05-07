@@ -12,12 +12,18 @@ public class Player : NetworkBehaviour, IDrownable
     private float MovementFactor = 1.0f;
     private Material DeadMaterial;
     private bool HasHandledDeath;
+    private Rigidbody rigidBody;
+    private AudioClip fallingSound;
+    // TODO: Make server property
+    private bool isFalling;
     // Start is called before the first frame update
     void Start()
     {
-        DeadMaterial = Resources.Load("Materials/Toon Chicken Dead", typeof(Material)) as Material;
+        DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
+        fallingSound = Resources.Load<AudioClip>("Audio/Wilhelm-Scream");
         healthHandler = GetComponent<HealthHandler>();
         healthHandler.OnDeathDelegate = OnDeath;
+        rigidBody = GetComponent<Rigidbody>();
     }
 
     private void FixedUpdate()
@@ -32,6 +38,7 @@ public class Player : NetworkBehaviour, IDrownable
         {
             OnDeath();
         }
+        CheckIfFalling();
         if (!hasAuthority) { return; }
     /*    transform.Rotate(Vector3.up, updatedRotationDelta);
         updatedRotationDelta = 0.0f;
@@ -62,6 +69,25 @@ public class Player : NetworkBehaviour, IDrownable
         if (!hasAuthority) { return; }
        // updatedRotationDelta = rotationDelta;
      //   updatedTranslationDelta = translationDelta;
+    }
+
+    private void CheckIfFalling()
+    {
+        if (rigidBody != null && rigidBody.velocity.y < -5f)
+        {
+            if (!isFalling)
+            {
+                if (!healthHandler.IsDead)
+                {
+                    GetComponent<AudioSource>().PlayOneShot(fallingSound);
+                }
+                isFalling = true;
+            }
+        }
+        else
+        {
+            isFalling = false;
+        }
     }
 
     // TODO: Make this a call from server
