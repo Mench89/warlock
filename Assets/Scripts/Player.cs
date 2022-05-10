@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour, IDrownable
 {
-    public string playerName;
+    [SyncVar] public string playerName;
     private HealthHandler healthHandler;
     private const float rotationSpeed = 360.0f;
     private const float movementSpeed = 2.0f;
@@ -16,6 +16,7 @@ public class Player : NetworkBehaviour, IDrownable
     private AudioClip fallingSound;
     // TODO: Make server property
     private bool isFalling;
+    [SyncVar] private int playerId;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +25,7 @@ public class Player : NetworkBehaviour, IDrownable
         healthHandler = GetComponent<HealthHandler>();
         healthHandler.OnDeathDelegate = OnDeath;
         rigidBody = GetComponent<Rigidbody>();
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
     }
 
     private void FixedUpdate()
@@ -51,6 +53,15 @@ public class Player : NetworkBehaviour, IDrownable
         transform.Translate(vertical * Vector3.forward * movementSpeed * MovementFactor * Time.deltaTime);
         // serverRequestMovement(horizontal, vertical);
   
+    }
+
+    [ClientRpc]
+    public void SetPlayerId(int playerId, string name)
+    {
+        this.playerId = playerId;
+        playerName = name;
+        Debug.Log("Magnus, player named: " + name + " has joined the game! And player id: " + playerId);
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
     }
 
     [Command]
@@ -103,5 +114,14 @@ public class Player : NetworkBehaviour, IDrownable
     {
         // TODO: Trigger respawn?
         OnDeath();
+    }
+
+    private Material MaterialForPlayerId(int playerId)
+    {
+        if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken White"); }
+        if (playerId == 2) { return Resources.Load<Material>("Materials/Toon Chicken Red"); }
+        if (playerId == 3) { return Resources.Load<Material>("Materials/Toon Chicken Blue"); }
+        if (playerId == 4) { return Resources.Load<Material>("Materials/Toon Chicken Green"); }
+        return Resources.Load<Material>("Materials/Toon Chicken White");
     }
 }

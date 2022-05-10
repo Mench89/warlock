@@ -13,7 +13,7 @@ public class WaterSoundController : MonoBehaviour
 
     void OnCollisionEnter()
     {
-        audioSource.PlayOneShot(GetRandomAudioClip());
+        audioSource.PlayOneShot(GetRandomAudioClip(), 0.8f);
     }
 
     private AudioClip GetRandomAudioClip()

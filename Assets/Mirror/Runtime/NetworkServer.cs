@@ -31,6 +31,11 @@ namespace Mirror
         public static readonly Dictionary<uint, NetworkIdentity> spawned =
             new Dictionary<uint, NetworkIdentity>();
 
+        public static void AddPlayerForConnection(NetworkConnection conn, GameObject gameobject)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>Single player mode can use dontListen to not accept incoming connections</summary>
         // see also: https://github.com/vis2k/Mirror/pull/2595
         public static bool dontListen;

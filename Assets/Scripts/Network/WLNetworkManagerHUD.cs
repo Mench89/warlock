@@ -11,15 +11,14 @@ namespace Mirror
     [HelpURL("https://mirror-networking.gitbook.io/docs/components/network-manager-hud")]
     public class WLNetworkManagerHUD : MonoBehaviour
     {
-        NetworkManager manager;
+        WLNetworkManager manager;
 
         public int offsetX;
         public int offsetY;
-        public string playerName = "Player name";
 
         void Awake()
         {
-            manager = GetComponent<NetworkManager>();
+            manager = GetComponent<WLNetworkManager>();
         }
 
         void OnGUI()
@@ -76,7 +75,7 @@ namespace Mirror
                 manager.networkAddress = GUILayout.TextField(manager.networkAddress);
                 GUILayout.EndHorizontal();
 
-                playerName = GUILayout.TextField(playerName);
+                manager.playerName = GUILayout.TextField(manager.playerName);
             
 
                 // Server Only

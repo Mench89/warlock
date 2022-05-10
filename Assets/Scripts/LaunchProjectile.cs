@@ -39,7 +39,5 @@ public class LaunchProjectile : NetworkBehaviour
         }
         
         NetworkServer.Spawn(bullet);
-        
-        // RpcOnFire();
     }
 }
