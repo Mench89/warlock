@@ -6,6 +6,7 @@ public class Player : NetworkBehaviour, IDrownable
     [SyncVar] public string playerName;
     private HealthHandler healthHandler;
     private const float rotationSpeed = 360.0f;
+    private const float raiseSpeed = 45.0f;
     private const float movementSpeed = 2.0f;
     private const float DEATH_MOVEMENT_FACTOR = 0.3f;
     // 1.0 by default but could be affected by events and other effects, like death.
@@ -28,8 +29,10 @@ public class Player : NetworkBehaviour, IDrownable
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
     }
 
-    private void FixedUpdate()
+    [Client]
+    void FixedUpdate()
     {
+        if (!hasAuthority) { return; }
 
     }
 
@@ -49,10 +52,15 @@ public class Player : NetworkBehaviour, IDrownable
         // TODO: We need to change from client authentication
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
+        
         transform.Rotate(Vector3.up, horizontal * rotationSpeed * MovementFactor * Time.deltaTime);
         transform.Translate(vertical * Vector3.forward * movementSpeed * MovementFactor * Time.deltaTime);
+
         // serverRequestMovement(horizontal, vertical);
-  
+        var raise = Input.GetAxis("Raise");
+        RaisePlayer(raise);
+
+
     }
 
     [ClientRpc]
@@ -90,7 +98,7 @@ public class Player : NetworkBehaviour, IDrownable
             {
                 if (!healthHandler.IsDead)
                 {
-                    GetComponent<AudioSource>().PlayOneShot(fallingSound);
+                    GetComponent<AudioSource>().PlayOneShot(fallingSound, 0.7f);
                 }
                 isFalling = true;
             }
@@ -114,6 +122,61 @@ public class Player : NetworkBehaviour, IDrownable
     {
         // TODO: Trigger respawn?
         OnDeath();
+    }
+
+    // TODO: Make as a server command
+    private void RaisePlayer(float raiseValue)
+    {
+        transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+        return;
+        // TODO: Take a look at this again, should nere work.
+        /*if (raiseValue > 0.0)
+        {
+            var prelAngleRaise = raiseValue * raiseSpeed * MovementFactor * Time.deltaTime;
+            float angleX = 0.0f;
+            float angleZ = 0.0f;
+
+            if (Mathf.Abs(transform.rotation.eulerAngles.x) > 5.0f)
+            {
+                if (transform.rotation.eulerAngles.x > 0)
+                {
+                    angleX = Mathf.Min(-prelAngleRaise, 0);
+                }
+                else
+                {
+                    angleX = Mathf.Max(prelAngleRaise, 0);
+                }
+                Debug.Log("Magnus, angleX NEW: " + angleX);
+            }
+
+            if (Mathf.Abs(transform.rotation.eulerAngles.z) > 5.0f)
+            {
+                if (transform.rotation.eulerAngles.z > 0)
+                {
+                    angleZ = Mathf.Min(-prelAngleRaise, 0);
+                }
+                else
+                {
+                    angleZ = Mathf.Max(prelAngleRaise, 0);
+                }
+                Debug.Log("Magnus, angleZ NEW: " + angleZ);
+            }
+
+
+            Debug.Log("Magnus, angleX: " + transform.eulerAngles.x + " angleZ: " + transform.rotation.eulerAngles.z);
+            //transform.Rotate(Vector3.forward, angle);
+             //transform.Rotate(angleX, 0.0f, angleZ);
+            // transform.rotation *= Quaternion.AngleAxis(angleX, Vector3.right);
+            //transform.rotation *= Quaternion.AngleAxis(angleZ, Vector3.forward);
+            transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+
+            Vector3 to = new Vector3(90, transform.eulerAngles.y, 90);
+            if (Vector3.Distance(transform.eulerAngles, to) > 1.0f)
+            {
+               // transform.eulerAngles = Vector3.Lerp(transform.rotation.eulerAngles, to, Time.deltaTime);
+            }
+        }
+        */
     }
 
     private Material MaterialForPlayerId(int playerId)
