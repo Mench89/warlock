@@ -22,7 +22,6 @@ public class Bullet : NetworkBehaviour
     }
 
 
-
     [ServerCallback]
     void OnCollisionEnter(Collision collision)
     {
@@ -38,22 +37,15 @@ public class Bullet : NetworkBehaviour
                 var isAlive = !healthHandler.IsDead;
                 healthHandler.ApplyDamage(DAMAGE);
                 // TODO: Remove later
-                ScoreBoard.instance.AddPointToPlayer(1, owningPlayer);
+                Scoreboard.instance.AddPointToPlayer(1, owningPlayer);
                 // Check for killing blow
                 if (healthHandler.IsDead && isAlive)
                 {
                     Debug.Log("Killing blow!");
-                    ScoreBoard.instance.AddPointToPlayer(1, owningPlayer);
+                    Scoreboard.instance.AddPointToPlayer(1, owningPlayer);
                 }
             }
             Destroy(gameObject);
         }
-    }
-
-    [ServerCallback]
-    void OnTriggerEnter(Collider collider)
-    {
-        GameObject otherObj = collider.gameObject;
-        Debug.Log("Triggered with: " + otherObj);
     }
 }

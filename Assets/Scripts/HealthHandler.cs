@@ -14,11 +14,7 @@ public class HealthHandler : NetworkBehaviour
     public delegate void OnDeath();
     public OnDeath OnDeathDelegate;
 
-    public int CurrentHealth
-    {
-        get;
-        private set;
-    }
+    [SyncVar] public int CurrentHealth;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +22,14 @@ public class HealthHandler : NetworkBehaviour
         CurrentHealth = MaxHealth;
     }
 
+    [Server]
+    public void ResetHealth()
+    {
+        CurrentHealth = MaxHealth;
+        IsDead = false;
+    }
+
+    [Server]
     public void ApplyDamage(int damage)
     {
         CurrentHealth -= damage;

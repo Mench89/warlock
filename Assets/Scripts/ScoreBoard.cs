@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class ScoreBoard : NetworkBehaviour
+public class Scoreboard : NetworkBehaviour
 {
-    public static ScoreBoard instance = null;
+    public static Scoreboard instance = null;
     private IDictionary<Player, int> playerScores = new Dictionary<Player, int>();
 
     private void Awake()

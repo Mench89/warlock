@@ -3,20 +3,26 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour, IDrownable
 {
+    enum PlayerState
+    {
+        Alive, Zombified, Drowned
+    }
     [SyncVar] public string playerName;
     private HealthHandler healthHandler;
     private const float rotationSpeed = 360.0f;
     private const float raiseSpeed = 45.0f;
     private const float movementSpeed = 2.0f;
     private const float DEATH_MOVEMENT_FACTOR = 0.3f;
+    private const float DEFAULT_MOVEMENT_FACTOR = 1.0f;
     // 1.0 by default but could be affected by events and other effects, like death.
-    private float MovementFactor = 1.0f;
+    private float movementFactor = DEFAULT_MOVEMENT_FACTOR;
     private Material DeadMaterial;
-    private bool HasHandledDeath;
+    private bool hasHandledDeath;
     private Rigidbody rigidBody;
     private AudioClip fallingSound;
     // TODO: Make server property
     private bool isFalling;
+    private PlayerState playerState;
     [SyncVar] private int playerId;
     // Start is called before the first frame update
     void Start()
@@ -27,12 +33,13 @@ public class Player : NetworkBehaviour, IDrownable
         healthHandler.OnDeathDelegate = OnDeath;
         rigidBody = GetComponent<Rigidbody>();
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        playerState = PlayerState.Alive;
     }
 
     [Client]
     void Update()
     {
-        if (!HasHandledDeath && healthHandler.IsDead)
+        if (!hasHandledDeath && healthHandler.IsDead)
         {
             OnDeath();
         }
@@ -46,12 +53,19 @@ public class Player : NetworkBehaviour, IDrownable
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
         
-        transform.Rotate(Vector3.up, horizontal * rotationSpeed * MovementFactor * Time.deltaTime);
-        transform.Translate(vertical * Vector3.forward * movementSpeed * MovementFactor * Time.deltaTime);
+        transform.Rotate(Vector3.up, horizontal * rotationSpeed * movementFactor * Time.deltaTime);
+        transform.Translate(vertical * Vector3.forward * movementSpeed * movementFactor * Time.deltaTime);
 
         // serverRequestMovement(horizontal, vertical);
         var raise = Input.GetAxis("Raise");
         RaisePlayer(raise);
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            if (playerState == PlayerState.Drowned)
+            {
+                CommandRequestRespawn();
+            }
+        }
 
 
     }
@@ -65,27 +79,9 @@ public class Player : NetworkBehaviour, IDrownable
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
     }
 
-    [Command]
-    private void serverRequestMovement(float horizontalMovement, float verticalMovement)
-    {
-        // TODO: Validate requested data.
-        // RpcMovePlayer(horizontalMovement, verticalMovement);
-        float rotationDelta = horizontalMovement * rotationSpeed * Time.deltaTime;
-        Vector3 translationDelta = verticalMovement * Vector3.forward * movementSpeed * Time.deltaTime;
-        RpcMovePlayer(translationDelta, rotationDelta);
-    }
-
-    [ClientRpc]
-    private void RpcMovePlayer(Vector3 translationDelta, float rotationDelta)
-    {
-        if (!hasAuthority) { return; }
-       // updatedRotationDelta = rotationDelta;
-     //   updatedTranslationDelta = translationDelta;
-    }
-
     private void CheckIfFalling()
     {
-        if (rigidBody != null && rigidBody.velocity.y < -5f)
+        if (rigidBody.velocity.y < -5f)
         {
             if (!isFalling)
             {
@@ -96,25 +92,52 @@ public class Player : NetworkBehaviour, IDrownable
                 isFalling = true;
             }
         }
-        else
+        else if (rigidBody.velocity.y > -4f)
         {
             isFalling = false;
         }
     }
 
     // TODO: Make this a call from server
+    [ClientRpc]
     private void OnDeath()
     {
-        MovementFactor = DEATH_MOVEMENT_FACTOR;
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
-        HasHandledDeath = true;
-        //Destroy(gameObject);
+        KillPlayer();
+        playerState = PlayerState.Zombified;
     }
 
     public void OnDrown()
     {
-        // TODO: Trigger respawn?
-        OnDeath();
+        KillPlayer();
+        playerState = PlayerState.Drowned;
+    }
+
+    private void KillPlayer()
+    {
+        movementFactor = DEATH_MOVEMENT_FACTOR;
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
+        hasHandledDeath = true;
+    }
+
+    [Command]
+    private void CommandRequestRespawn()
+    {
+        if (playerState != PlayerState.Drowned) { return; }
+        healthHandler.ResetHealth();
+        var startTransform = WLNetworkManager.singleton.GetStartPosition();
+        RpcRespawnPlayer(startTransform.position, startTransform.rotation);
+    }
+
+    [ClientRpc]
+    private void RpcRespawnPlayer(Vector3 startPosition, Quaternion startRotation)
+    {
+        transform.position = startPosition;
+        transform.rotation = startRotation;
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        movementFactor = DEFAULT_MOVEMENT_FACTOR;
+        hasHandledDeath = false;
+        isFalling = false;
+        playerState = PlayerState.Alive;
     }
 
     // TODO: Make as a server command
