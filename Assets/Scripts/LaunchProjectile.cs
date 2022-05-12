@@ -29,15 +29,20 @@ public class LaunchProjectile : NetworkBehaviour
     [Command]
     private void commandShootBullet()
     {
-        GameObject bullet = Instantiate(projectile,
+        GameObject bulletObject = Instantiate(projectile,
             projectTileLaunchPosition.position,
             projectTileLaunchPosition.rotation);
-        bullet.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 10);
+        Bullet bullet = bulletObject.GetComponent<Bullet>();
+        if (bullet != null)
+        {
+            bullet.owningPlayer = GetComponent<Player>();
+        }
+        bulletObject.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 10);
         if (colliderToIgnore) {
             Debug.Log("Magnus, collider component: " + colliderToIgnore.ToString());
-            Physics.IgnoreCollision(bullet.GetComponent<Collider>(), colliderToIgnore);
+            Physics.IgnoreCollision(bulletObject.GetComponent<Collider>(), colliderToIgnore);
         }
         
-        NetworkServer.Spawn(bullet);
+        NetworkServer.Spawn(bulletObject);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class Bullet : NetworkBehaviour
 {
     [SyncVar]
-    public NetworkIdentity spawnedBy;
+    public Player owningPlayer;
     // Automatically destroy the bullet after some time.
     private const float MAX_TIME_TO_LIVE = 5.0f;
     private const int DAMAGE = 1;
@@ -35,7 +35,16 @@ public class Bullet : NetworkBehaviour
             HealthHandler healthHandler = otherObj.GetComponent<HealthHandler>();
             if (healthHandler != null)
             {
+                var isAlive = !healthHandler.IsDead;
                 healthHandler.ApplyDamage(DAMAGE);
+                // TODO: Remove later
+                ScoreBoard.instance.AddPointToPlayer(1, owningPlayer);
+                // Check for killing blow
+                if (healthHandler.IsDead && isAlive)
+                {
+                    Debug.Log("Killing blow!");
+                    ScoreBoard.instance.AddPointToPlayer(1, owningPlayer);
+                }
             }
             Destroy(gameObject);
         }

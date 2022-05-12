@@ -30,13 +30,6 @@ public class Player : NetworkBehaviour, IDrownable
     }
 
     [Client]
-    void FixedUpdate()
-    {
-        if (!hasAuthority) { return; }
-
-    }
-
-    [Client]
     void Update()
     {
         if (!HasHandledDeath && healthHandler.IsDead)
@@ -127,6 +120,10 @@ public class Player : NetworkBehaviour, IDrownable
     // TODO: Make as a server command
     private void RaisePlayer(float raiseValue)
     {
+        if (raiseValue < 0.01)
+        {
+            return;
+        }
         transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
         return;
         // TODO: Take a look at this again, should nere work.
