@@ -201,7 +201,7 @@ public class Player : NetworkBehaviour, IDrownable
 
     private Material MaterialForPlayerId(int playerId)
     {
-        if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken White"); }
+        if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken Yellow"); }
         if (playerId == 2) { return Resources.Load<Material>("Materials/Toon Chicken Red"); }
         if (playerId == 3) { return Resources.Load<Material>("Materials/Toon Chicken Blue"); }
         if (playerId == 4) { return Resources.Load<Material>("Materials/Toon Chicken Green"); }
