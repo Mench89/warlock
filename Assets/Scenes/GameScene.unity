@@ -1102,6 +1102,10 @@ PrefabInstance:
       propertyPath: sceneId
       value: 3942811729
       objectReference: {fileID: 0}
+    - target: {fileID: 2808137952961599094, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6431e4fb1e8e14875839d80d0b73101c, type: 2}
     - target: {fileID: 2815487459390391217, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
       propertyPath: m_Enabled
       value: 1

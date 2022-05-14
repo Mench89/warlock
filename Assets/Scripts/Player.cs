@@ -20,6 +20,7 @@ public class Player : NetworkBehaviour, IDrownable
     private bool hasHandledDeath;
     private Rigidbody rigidBody;
     private AudioClip fallingSound;
+    private AudioClip deathSound;
     // TODO: Make server property
     private bool isFalling;
     private PlayerState playerState;
@@ -29,6 +30,7 @@ public class Player : NetworkBehaviour, IDrownable
     {
         DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
         fallingSound = Resources.Load<AudioClip>("Audio/Wilhelm-Scream");
+        deathSound = Resources.Load<AudioClip>("Audio/death1");
         healthHandler = GetComponent<HealthHandler>();
         healthHandler.OnDeathDelegate = OnDeath;
         rigidBody = GetComponent<Rigidbody>();
@@ -114,6 +116,11 @@ public class Player : NetworkBehaviour, IDrownable
 
     private void KillPlayer()
     {
+        if (playerState == PlayerState.Alive)
+        {
+            GetComponent<AudioSource>().PlayOneShot(deathSound, 0.7f);
+        }
+        
         movementFactor = DEATH_MOVEMENT_FACTOR;
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
         hasHandledDeath = true;
