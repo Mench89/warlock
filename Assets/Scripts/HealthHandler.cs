@@ -9,7 +9,7 @@ public interface IHealthEvents
 public class HealthHandler : NetworkBehaviour
 {
     [SerializeField] public int MaxHealth = 10;
-    [SyncVar] public bool IsDead;
+    [SyncVar(hook = nameof(SetIsDead))] public bool IsDead;
 
     public delegate void OnDamageTaken(int damage);
     public OnDamageTaken OnDamageTakenDelegate;
@@ -46,11 +46,18 @@ public class HealthHandler : NetworkBehaviour
             CurrentHealth = 0;
             Debug.Log("Object is dead!");
             IsDead = true;
+        }
+    }
+
+    public void SetIsDead(bool oldValue, bool newValue)
+    {
+        // Only report when we've just died
+        if (!oldValue && newValue)
+        {
             if (OnDeathDelegate != null)
             {
                 OnDeathDelegate();
             }
         }
-
     }
 }

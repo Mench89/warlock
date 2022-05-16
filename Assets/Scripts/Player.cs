@@ -20,13 +20,13 @@ public class Player : NetworkBehaviour, IDrownable
     // 1.0 by default but could be affected by events and other effects, like death.
     private float movementFactor = DEFAULT_MOVEMENT_FACTOR;
     private Material DeadMaterial;
-    private bool hasHandledDeath;
     private Rigidbody rigidBody;
     
     // TODO: Make server property
     private bool isFalling;
-    private PlayerState playerState;
+    [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
     [SyncVar] private int playerId;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,16 +36,11 @@ public class Player : NetworkBehaviour, IDrownable
         healthHandler.OnDamageTakenDelegate = OnDamageTaken;
         rigidBody = GetComponent<Rigidbody>();
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
-        playerState = PlayerState.Alive;
     }
 
     [Client]
     void Update()
     {
-        if (!hasHandledDeath && healthHandler.IsDead)
-        {
-            OnDeath();
-        }
         CheckIfFalling();
         if (!hasAuthority) { return; }
     /*    transform.Rotate(Vector3.up, updatedRotationDelta);
@@ -106,18 +101,23 @@ public class Player : NetworkBehaviour, IDrownable
         GetComponent<AudioSource>().PlayOneShot(GetRandomDamageSound(), 0.7f);
     }
 
-    // TODO: Make this a call from server
-    [ClientRpc]
+    [Server]
     private void OnDeath()
     {
-        KillPlayer();
         playerState = PlayerState.Zombified;
     }
 
+    [Server]
     public void OnDrown()
     {
-        KillPlayer();
         playerState = PlayerState.Drowned;
+    }
+
+    private void ResetPlayer()
+    {
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        movementFactor = DEFAULT_MOVEMENT_FACTOR;
+        isFalling = false;
     }
 
     private void KillPlayer()
@@ -129,7 +129,24 @@ public class Player : NetworkBehaviour, IDrownable
         
         movementFactor = DEATH_MOVEMENT_FACTOR;
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
-        hasHandledDeath = true;
+    }
+
+    private void SetPlayerState(PlayerState oldState, PlayerState newState)
+    {
+        if (oldState == newState) { return; }
+        switch (newState)
+        {
+            case PlayerState.Alive:
+                ResetPlayer();
+                break;
+            case PlayerState.Zombified:
+                KillPlayer();
+                break;
+            case PlayerState.Drowned:
+                Debug.Log("Magnus, drowned!!!");
+                KillPlayer();
+                break;
+        }
     }
 
     [Command]
@@ -138,6 +155,7 @@ public class Player : NetworkBehaviour, IDrownable
         if (playerState != PlayerState.Drowned) { return; }
         healthHandler.ResetHealth();
         var startTransform = WLNetworkManager.singleton.GetStartPosition();
+        playerState = PlayerState.Alive;
         RpcRespawnPlayer(startTransform.position, startTransform.rotation);
     }
 
@@ -146,11 +164,6 @@ public class Player : NetworkBehaviour, IDrownable
     {
         transform.position = startPosition;
         transform.rotation = startRotation;
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
-        movementFactor = DEFAULT_MOVEMENT_FACTOR;
-        hasHandledDeath = false;
-        isFalling = false;
-        playerState = PlayerState.Alive;
     }
 
     // TODO: Make as a server command
