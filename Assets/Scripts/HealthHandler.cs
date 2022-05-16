@@ -11,6 +11,8 @@ public class HealthHandler : NetworkBehaviour
     [SerializeField] public int MaxHealth = 10;
     [SyncVar] public bool IsDead;
 
+    public delegate void OnDamageTaken(int damage);
+    public OnDamageTaken OnDamageTakenDelegate;
     public delegate void OnDeath();
     public OnDeath OnDeathDelegate;
 
@@ -34,7 +36,13 @@ public class HealthHandler : NetworkBehaviour
     {
         CurrentHealth -= damage;
         Debug.Log(damage + " damage taken!");
-        if (CurrentHealth <= 0) {
+        if (CurrentHealth > 0)
+        {
+            if (OnDamageTakenDelegate != null)
+            {
+                OnDamageTakenDelegate(damage);
+            }
+        } else {
             CurrentHealth = 0;
             Debug.Log("Object is dead!");
             IsDead = true;

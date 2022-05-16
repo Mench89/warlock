@@ -7,6 +7,7 @@ public class LaunchProjectile : NetworkBehaviour
 {
     [SerializeField] [SyncVar] public Transform projectTileLaunchPosition;
     [SerializeField] public Collider colliderToIgnore;
+    [SerializeField] public AudioClip[] shootingSounds;
     private HealthHandler healthHandler;
     public GameObject projectile;
 
@@ -44,5 +45,17 @@ public class LaunchProjectile : NetworkBehaviour
         }
         
         NetworkServer.Spawn(bulletObject);
+        RpcBulletSpawned();
+    }
+
+    [ClientRpc]
+    private void RpcBulletSpawned()
+    {
+        GetComponent<AudioSource>().PlayOneShot(GetRandomShootingSound(), 0.7f);
+    }
+
+    private AudioClip GetRandomShootingSound()
+    {
+        return shootingSounds[Random.Range(0, shootingSounds.Length - 1)];
     }
 }

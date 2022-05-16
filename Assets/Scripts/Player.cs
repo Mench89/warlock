@@ -8,6 +8,9 @@ public class Player : NetworkBehaviour, IDrownable
         Alive, Zombified, Drowned
     }
     [SyncVar] public string playerName;
+    [SerializeField] public AudioClip[] fallingSounds;
+    [SerializeField] public AudioClip[] deathSounds;
+    [SerializeField] public AudioClip[] takingDamageSounds;
     private HealthHandler healthHandler;
     private const float rotationSpeed = 360.0f;
     private const float raiseSpeed = 45.0f;
@@ -19,8 +22,7 @@ public class Player : NetworkBehaviour, IDrownable
     private Material DeadMaterial;
     private bool hasHandledDeath;
     private Rigidbody rigidBody;
-    private AudioClip fallingSound;
-    private AudioClip deathSound;
+    
     // TODO: Make server property
     private bool isFalling;
     private PlayerState playerState;
@@ -29,10 +31,9 @@ public class Player : NetworkBehaviour, IDrownable
     void Start()
     {
         DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
-        fallingSound = Resources.Load<AudioClip>("Audio/Wilhelm-Scream");
-        deathSound = Resources.Load<AudioClip>("Audio/death1");
         healthHandler = GetComponent<HealthHandler>();
         healthHandler.OnDeathDelegate = OnDeath;
+        healthHandler.OnDamageTakenDelegate = OnDamageTaken;
         rigidBody = GetComponent<Rigidbody>();
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
         playerState = PlayerState.Alive;
@@ -89,7 +90,7 @@ public class Player : NetworkBehaviour, IDrownable
             {
                 if (!healthHandler.IsDead)
                 {
-                    GetComponent<AudioSource>().PlayOneShot(fallingSound, 0.7f);
+                    GetComponent<AudioSource>().PlayOneShot(GetRandomFallingSound(), 0.7f);
                 }
                 isFalling = true;
             }
@@ -98,6 +99,11 @@ public class Player : NetworkBehaviour, IDrownable
         {
             isFalling = false;
         }
+    }
+
+    private void OnDamageTaken(int damage)
+    {
+        GetComponent<AudioSource>().PlayOneShot(GetRandomDamageSound(), 0.7f);
     }
 
     // TODO: Make this a call from server
@@ -118,7 +124,7 @@ public class Player : NetworkBehaviour, IDrownable
     {
         if (playerState == PlayerState.Alive)
         {
-            GetComponent<AudioSource>().PlayOneShot(deathSound, 0.7f);
+            GetComponent<AudioSource>().PlayOneShot(GetRandomDeathSound(), 0.7f);
         }
         
         movementFactor = DEATH_MOVEMENT_FACTOR;
@@ -204,6 +210,21 @@ public class Player : NetworkBehaviour, IDrownable
             }
         }
         */
+    }
+
+    private AudioClip GetRandomFallingSound()
+    {
+        return fallingSounds[Random.Range(0, fallingSounds.Length - 1)];
+    }
+
+    private AudioClip GetRandomDeathSound()
+    {
+        return deathSounds[Random.Range(0, deathSounds.Length - 1)];
+    }
+
+    private AudioClip GetRandomDamageSound()
+    {
+        return takingDamageSounds[Random.Range(0, takingDamageSounds.Length - 1)];
     }
 
     private Material MaterialForPlayerId(int playerId)

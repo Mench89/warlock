@@ -612,6 +612,17 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   playerName: 
+  fallingSounds:
+  - {fileID: 8300000, guid: ca9e3e070f0cb4813a4990aa218e4b16, type: 3}
+  - {fileID: 8300000, guid: 31ecf0e0873a245baa01f29a7ba0dd43, type: 3}
+  - {fileID: 8300000, guid: 5fab63ee13ecb498fa9de4335fc72ed5, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: 0620bfb763f13438e93abf08fd1c6d06, type: 3}
+  takingDamageSounds:
+  - {fileID: 8300000, guid: 239e418bea9854372a0a1bb2028cacbd, type: 3}
+  - {fileID: 8300000, guid: d06b9fefe24b04bf5a058db30f08dc3d, type: 3}
+  - {fileID: 8300000, guid: ecd05477848cf48539082dacbad708b4, type: 3}
+  - {fileID: 8300000, guid: 6e65d49832dd948c0861f711e16fe800, type: 3}
 --- !u!114 &4553649720851759314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,6 +673,8 @@ MonoBehaviour:
   syncInterval: 0.1
   projectTileLaunchPosition: {fileID: 4919868697167514446}
   colliderToIgnore: {fileID: 2815487459390391217}
+  shootingSounds:
+  - {fileID: 8300000, guid: a82937a45ddf54b4fadaed7a0b770709, type: 3}
   projectile: {fileID: 3614962556155633297, guid: 6668381634ab9c44ab01d47b85b0da06, type: 3}
 --- !u!114 &5124819460738509170
 MonoBehaviour:
@@ -679,6 +692,7 @@ MonoBehaviour:
   syncInterval: 0.1
   MaxHealth: 5
   IsDead: 0
+  CurrentHealth: 0
 --- !u!82 &2037195607103420457
 AudioSource:
   m_ObjectHideFlags: 0
