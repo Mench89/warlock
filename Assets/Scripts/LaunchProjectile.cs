@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LaunchProjectile : NetworkBehaviour
 {
-    [SerializeField] [SyncVar] public Transform projectTileLaunchPosition;
+    [SerializeField] public Transform projectTileLaunchPosition;
     [SerializeField] public Collider colliderToIgnore;
     [SerializeField] public AudioClip[] shootingSounds;
     private HealthHandler healthHandler;
