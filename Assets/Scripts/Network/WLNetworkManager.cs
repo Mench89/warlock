@@ -44,6 +44,7 @@ public class WLNetworkManager : NetworkManager
         Player player = gameobject.GetComponent<Player>();
         int playerId = numPlayers;
         player.SetPlayerId(playerId, message.name);
+        Scoreboard.instance.AddPlayerToList(player);
     }
 
 }

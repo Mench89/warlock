@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Label text="Name" display-tooltip-when-elided="true" name="NameLabel" style="width: 70%; flex-direction: column; align-items: auto; height: 30px;" />
+    <ui:Label text="Points" display-tooltip-when-elided="true" name="PointsLabel" style="flex-direction: row-reverse; align-items: auto; height: 30px; width: 20%; right: 0; position: absolute; -unity-text-align: upper-right; -unity-font: none;" />
+</ui:UXML>

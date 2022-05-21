@@ -64,8 +64,6 @@ public class Player : NetworkBehaviour, IDrownable
                 CommandRequestRespawn();
             }
         }
-
-
     }
 
     [ClientRpc]
@@ -143,7 +141,6 @@ public class Player : NetworkBehaviour, IDrownable
                 KillPlayer();
                 break;
             case PlayerState.Drowned:
-                Debug.Log("Magnus, drowned!!!");
                 KillPlayer();
                 break;
         }

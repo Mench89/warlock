@@ -402,6 +402,7 @@ GameObject:
   m_Component:
   - component: {fileID: 272568882}
   - component: {fileID: 272568881}
+  - component: {fileID: 272568883}
   m_Layer: 5
   m_Name: Scoreboard Document
   m_TagString: Untagged
@@ -440,6 +441,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &272568883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272568880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5b6711fd5b4143d9a572ecaf29620bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listItemAsset: {fileID: 9197481963319205126, guid: 76e6e817035394e70bc5e77773d39377, type: 3}
 --- !u!1001 &298804792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -989,7 +1003,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 902dc6884800a45a587a79070713ca6f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 1
   Mute: 0
