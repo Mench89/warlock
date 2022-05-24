@@ -13,7 +13,7 @@ public interface IScoreboardPoints
 public class Scoreboard : NetworkBehaviour
 {
     public static Scoreboard instance = null;
-    public IDictionary<Player, int> playerScores { get; private set; } = new Dictionary<Player, int>(); 
+    public SyncDictionary<Player, int> playerScores { get; private set; } = new SyncDictionary<Player, int>(); 
     private List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
 
     private void Awake()
@@ -41,7 +41,7 @@ public class Scoreboard : NetworkBehaviour
     {
         if (player == null) { return; }
         const int initialPoints = 0;
-        if (!playerScores.Keys.Contains(player))
+        if (!playerScores.ContainsKey(player))
         {
             playerScores.Add(player, initialPoints);
         }
@@ -60,7 +60,7 @@ public class Scoreboard : NetworkBehaviour
     public void AddPointToPlayer(int points, Player player)
     {
         if (player == null) { return; }
-        if (!playerScores.Keys.Contains(player)) {
+        if (!playerScores.ContainsKey(player)) {
             playerScores.Add(player, points);
         } else
         {
@@ -68,7 +68,6 @@ public class Scoreboard : NetworkBehaviour
         }
         RpcPlayerScored(player, points);
     }
-
 
     [ClientRpc]
     public void RpcPlayerScored(Player player, int points)
