@@ -5,31 +5,58 @@ using Mirror;
 
 public interface IScoreboardPoints
 {
-    public void PlayerAdded(Player player, int points);
-    public void PlayerRemvoved(Player player);
-    public void AddPointsToPlayer(Player player, int points);
+    public void PlayerAdded(PlayerInfo playerInfo, int points);
+    public void PlayerRemvoved(PlayerInfo player);
+    public void AddPointsToPlayer(PlayerInfo player, int points);
+}
+
+public struct PlayerInfo
+{
+    public int PlayerId;
+    public string Name;
+
+    public PlayerInfo(int playerId, string name)
+    {
+        PlayerId = playerId;
+        Name = name;
+    }
 }
 
 public class Scoreboard : NetworkBehaviour
 {
-    public static Scoreboard instance = null;
-    public SyncDictionary<Player, int> playerScores { get; private set; } = new SyncDictionary<Player, int>(); 
-    private List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
+    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>(); 
+    private readonly List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
 
-    private void Awake()
+    public override void OnStartClient()
     {
-        if (instance == null)
+        base.OnStartClient();
+        playerScores.Callback += OnPlayerScoreChanged;
+    }
+
+    void OnPlayerScoreChanged(SyncDictionary<PlayerInfo, int>.Operation op, PlayerInfo key, int item)
+    {
+        switch (op)
         {
-            instance = this;
-        } else if (instance != this)
-        {
-            Destroy(gameObject);
+            case SyncDictionary<PlayerInfo, int>.Operation.OP_ADD:
+                PlayerAdded(key, item);
+                break;
+            case SyncDictionary<PlayerInfo, int>.Operation.OP_SET:
+                PlayerScored(key, item);
+                break;
+            case SyncDictionary<PlayerInfo, int>.Operation.OP_REMOVE:
+                PlayerRemoved(key);
+                break;
+            case SyncDictionary<PlayerInfo, int>.Operation.OP_CLEAR:
+                break;
         }
     }
 
     public void AddScoreboardPointsListener(IScoreboardPoints listener)
     {
-        scoreboardListeners.Add(listener);
+        if (!scoreboardListeners.Contains(listener))
+        {
+            scoreboardListeners.Add(listener);
+        }
     }
 
     public void RemoveScorebardListener(IScoreboardPoints listener) {
@@ -37,58 +64,53 @@ public class Scoreboard : NetworkBehaviour
     }
 
     [Server]
-    public void AddPlayerToList(Player player)
+    public void AddPlayerToList(PlayerInfo playerInfo)
     {
-        if (player == null) { return; }
         const int initialPoints = 0;
-        if (!playerScores.ContainsKey(player))
+        if (!playerScores.ContainsKey(playerInfo))
         {
-            playerScores.Add(player, initialPoints);
+            playerScores.Add(playerInfo, initialPoints);
         }
-        RpcPlayerAdded(player, initialPoints);
     }
 
     [Server]
     public void RemovePlayerFromList(Player player)
     {
         if (player == null) { return; }
-        playerScores.Remove(player);
-
+        PlayerInfo playerInfo = new(player.playerId, player.playerName);
+        playerScores.Remove(playerInfo);
     }
 
     [Server]
     public void AddPointToPlayer(int points, Player player)
     {
         if (player == null) { return; }
-        if (!playerScores.ContainsKey(player)) {
-            playerScores.Add(player, points);
+        PlayerInfo playerInfo = new(player.playerId, player.playerName);
+        if (!playerScores.ContainsKey(playerInfo)) {
+            playerScores.Add(playerInfo, points);
         } else
         {
-            playerScores[player] += points;
+            playerScores[playerInfo] += points;
         }
-        RpcPlayerScored(player, points);
     }
 
-    [ClientRpc]
-    public void RpcPlayerScored(Player player, int points)
-    {
-        Debug.Log("Player: " + player.playerName + " scored " + points + " points!");
-        ReportPointsForPlayerToListeners(player, points);
-    }
-
-    [ClientRpc]
-    public void RpcPlayerAdded(Player player, int initialPoints)
+    private void PlayerAdded(PlayerInfo player, int initialPoints)
     {
         ReportAddedPlayerToListeners(player, initialPoints);
     }
 
-    [ClientRpc]
-    public void RpcPlayerRemoved(Player player)
+    private void PlayerRemoved(PlayerInfo player)
     {
         ReportRemovedPlayerToListeners(player);
     }
 
-    private void ReportPointsForPlayerToListeners(Player player, int points)
+    private void PlayerScored(PlayerInfo player, int points)
+    {
+        Debug.Log("Player: " + player.Name + " scored " + points + " points!");
+        ReportPointsForPlayerToListeners(player, points);
+    }
+
+    private void ReportPointsForPlayerToListeners(PlayerInfo player, int points)
     {
         foreach (IScoreboardPoints listener in scoreboardListeners)
         {
@@ -96,7 +118,7 @@ public class Scoreboard : NetworkBehaviour
         }
     }
 
-    private void ReportAddedPlayerToListeners(Player player, int initialPoints)
+    private void ReportAddedPlayerToListeners(PlayerInfo player, int initialPoints)
     {
         foreach (IScoreboardPoints listener in scoreboardListeners)
         {
@@ -104,7 +126,7 @@ public class Scoreboard : NetworkBehaviour
         }
     }
 
-    private void ReportRemovedPlayerToListeners(Player player)
+    private void ReportRemovedPlayerToListeners(PlayerInfo player)
     {
         foreach (IScoreboardPoints listener in scoreboardListeners)
         {

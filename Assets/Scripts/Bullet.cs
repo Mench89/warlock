@@ -8,11 +8,13 @@ public class Bullet : NetworkBehaviour
     // Automatically destroy the bullet after some time.
     private const float MAX_TIME_TO_LIVE = 5.0f;
     private const int DAMAGE = 1;
+    private Scoreboard scoreboard;
 
     // Start is called before the first frame update
     void Start()
     {
         Destroy(gameObject, MAX_TIME_TO_LIVE);
+        scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
     }
 
     // Update is called once per frame
@@ -37,12 +39,12 @@ public class Bullet : NetworkBehaviour
                 var isAlive = !healthHandler.IsDead;
                 healthHandler.ApplyDamage(DAMAGE);
                 // TODO: Remove later
-                Scoreboard.instance.AddPointToPlayer(1, owningPlayer);
+                scoreboard.AddPointToPlayer(1, owningPlayer);
                 // Check for killing blow
                 if (healthHandler.IsDead && isAlive)
                 {
                     Debug.Log("Killing blow!");
-                    Scoreboard.instance.AddPointToPlayer(1, owningPlayer);
+                    scoreboard.AddPointToPlayer(1, owningPlayer);
                 }
             }
             Destroy(gameObject);

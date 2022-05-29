@@ -7,16 +7,17 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
 {
     public struct ScoreItem
     {
-        public ScoreItem(Player player, int score)
+        public ScoreItem(PlayerInfo playerInfo, int score)
         {
-            Player = player;
+            PlayerInfo = playerInfo;
             Score = score;
         }
-        public Player Player;
+        public PlayerInfo PlayerInfo;
         public int Score;
     }
 
     [SerializeField] public VisualTreeAsset listItemAsset;
+    [SerializeField] public Scoreboard scoreboard;
     List<ScoreItem> items;
     private ListView listView;
 
@@ -24,25 +25,32 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
     {
         var rootVisualElement = GetComponent<UIDocument>().rootVisualElement;
         listView = rootVisualElement.Q<ListView>("ScoreList");
-        listView.makeItem = () => listItemAsset.CloneTree();
+        listView.makeItem = MakeItem;// () => listItemAsset.CloneTree();
         listView.bindItem = BindItem;
-        
+    }
+
+    private VisualElement MakeItem()
+    {
+        //Here we take the uxml and make a VisualElement
+        VisualElement listItem = listItemAsset.CloneTree();
+        listItem.SetEnabled(true);
+        return listItem;
+
     }
 
     private void Start()
     {
-        Scoreboard.instance.AddScoreboardPointsListener(this);
+        scoreboard.AddScoreboardPointsListener(this);
         PopulateListView();
     }
 
     private void PopulateListView()
     {
-        // Create a list of data. In this case, numbers from 1 to 1000.
-        int itemCount = Scoreboard.instance.playerScores.Count;
+        int itemCount = scoreboard.playerScores.Count;
         items = new List<ScoreItem>(itemCount);
-        foreach (var item in Scoreboard.instance.playerScores)
+        foreach (var item in scoreboard.playerScores)
         {
-            Debug.Log("Added player to scoreboard:" + item.Key.playerName);
+            Debug.Log("Added player to scoreboard:" + item.Key.Name);
             items.Add(new ScoreItem(item.Key, item.Value));
         }
 
@@ -53,23 +61,23 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
     private void BindItem(VisualElement e, int index)
     {
         Label nameLabel = e.Q<Label>("NameLabel");
-        nameLabel.text = items[index].Player.playerName;
+        nameLabel.text = items[index].PlayerInfo.Name;
         Label pointsLabel = e.Q<Label>("PointsLabel");
         pointsLabel.text = items[index].Score.ToString();
     }
 
     // IScoreboardPoints methods
 
-    // TODO: Need to optimize these methods
-    public void PlayerAdded(Player player, int points) {
+    // TODO: Optimize these methods
+    public void PlayerAdded(PlayerInfo player, int points) {
         PopulateListView();
     }
     
-    public void PlayerRemvoved(Player player) {
+    public void PlayerRemvoved(PlayerInfo player) {
         PopulateListView();
     }
 
-    public void AddPointsToPlayer(Player player, int points) {
+    public void AddPointsToPlayer(PlayerInfo player, int points) {
         PopulateListView();
     }
 }

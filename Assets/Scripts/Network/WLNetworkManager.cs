@@ -5,6 +5,7 @@ using UnityEngine;
 public class WLNetworkManager : NetworkManager
 {
     private const string PLACEHOLDER_PLAYER_NAME = "Player name";
+    [SerializeField] public Scoreboard scoarboard;
     public string playerName = PLACEHOLDER_PLAYER_NAME;
     public override void OnStartServer()
     {
@@ -44,7 +45,8 @@ public class WLNetworkManager : NetworkManager
         Player player = gameobject.GetComponent<Player>();
         int playerId = numPlayers;
         player.SetPlayerId(playerId, message.name);
-        Scoreboard.instance.AddPlayerToList(player);
+        PlayerInfo playerInfo = new PlayerInfo(playerId, message.name);
+        scoarboard.AddPlayerToList(playerInfo);
     }
 
 }

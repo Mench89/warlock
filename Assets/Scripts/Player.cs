@@ -25,7 +25,7 @@ public class Player : NetworkBehaviour, IDrownable
     // TODO: Make server property
     private bool isFalling;
     [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
-    [SyncVar] private int playerId;
+    [SyncVar] public int playerId;
 
     // Start is called before the first frame update
     void Start()
