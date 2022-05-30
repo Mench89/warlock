@@ -36,6 +36,10 @@ public class Player : NetworkBehaviour, IDrownable
         healthHandler.OnDamageTakenDelegate = OnDamageTaken;
         rigidBody = GetComponent<Rigidbody>();
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        if (playerState == PlayerState.Drowned || playerState == PlayerState.Zombified)
+        {
+            KillPlayer(false);
+        }
     }
 
     [Client]
@@ -118,9 +122,9 @@ public class Player : NetworkBehaviour, IDrownable
         isFalling = false;
     }
 
-    private void KillPlayer()
+    private void KillPlayer(bool playAudio)
     {
-        if (playerState == PlayerState.Alive)
+        if (playerState == PlayerState.Alive && playAudio)
         {
             GetComponent<AudioSource>().PlayOneShot(GetRandomDeathSound(), 0.7f);
         }
@@ -138,10 +142,10 @@ public class Player : NetworkBehaviour, IDrownable
                 ResetPlayer();
                 break;
             case PlayerState.Zombified:
-                KillPlayer();
+                KillPlayer(true);
                 break;
             case PlayerState.Drowned:
-                KillPlayer();
+                KillPlayer(true);
                 break;
         }
     }
