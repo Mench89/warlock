@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 36555356}
   - component: {fileID: 36555355}
   - component: {fileID: 36555357}
+  - component: {fileID: 36555358}
   m_Layer: 0
   m_Name: Water
   m_TagString: Untagged
@@ -348,6 +349,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379107c3008fa417b9b88b393b4d5a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+--- !u!114 &36555358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36555350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 810657787
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 
+  hasSpawned: 0
 --- !u!1 &208586090
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +701,7 @@ GameObject:
   - component: {fileID: 499113022}
   - component: {fileID: 499113021}
   - component: {fileID: 499113020}
+  - component: {fileID: 499113027}
   m_Layer: 0
   m_Name: Water Collider
   m_TagString: Untagged
@@ -700,6 +721,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 379107c3008fa417b9b88b393b4d5a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &499113021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -891,6 +914,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &499113027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499113019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 3065007254
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 
+  hasSpawned: 0
 --- !u!4 &577394062 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4879931433576538, guid: 10fd3a2d8f546df4f8af19c411a0f42e, type: 3}
