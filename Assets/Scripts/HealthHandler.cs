@@ -49,6 +49,7 @@ public class HealthHandler : NetworkBehaviour
         }
     }
 
+    [Server]
     public void SetIsDead(bool oldValue, bool newValue)
     {
         // Only report when we've just died

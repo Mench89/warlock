@@ -1,21 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class WaterDrownHandler : MonoBehaviour
+public class WaterDrownHandler : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    [ServerCallback]
     private void OnCollisionEnter(Collision collision)
     {
         IDrownable drownable = collision.gameObject.GetComponent<IDrownable>();
