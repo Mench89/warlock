@@ -512,12 +512,10 @@ GameObject:
   - component: {fileID: 2815487459919149478}
   - component: {fileID: 2000405098954624431}
   - component: {fileID: 7019525869513753194}
-  - component: {fileID: 4553649720851759314}
   - component: {fileID: 5051996638292954504}
   - component: {fileID: 5124819460738509170}
   - component: {fileID: 2037195607103420457}
-  - component: {fileID: 7821457332783233181}
-  - component: {fileID: 657886388617413494}
+  - component: {fileID: 74159119452676937}
   m_Layer: 0
   m_Name: Player chicken
   m_TagString: Player
@@ -548,7 +546,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2757967711109178656
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -565,7 +563,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!54 &2815487459919149478
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -626,40 +624,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ecd05477848cf48539082dacbad708b4, type: 3}
   - {fileID: 8300000, guid: 6e65d49832dd948c0861f711e16fe800, type: 3}
   playerId: 0
---- !u!114 &4553649720851759314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2816498479357730332}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 1
-  sendInterval: 0.05
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 0
-  bufferTimeMultiplier: 1
-  bufferSizeLimit: 64
-  catchupThreshold: 4
-  catchupMultiplier: 0.1
-  onlySyncOnChange: 1
-  bufferResetMultiplier: 5
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &5051996638292954504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -792,7 +756,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &7821457332783233181
+--- !u!114 &74159119452676937
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -801,58 +765,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2816498479357730332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c6e8001e79980341af98dc404133ebd, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  _useLocalSpace: 1
-  _intervalType: 0
-  _synchronizeInterval: 0.05
-  _smoothingLoop: 1
-  _interpolationFallbehind: 0.06
-  _extrapolationSpan: 0
-  _teleportThreshold: 0
-  _clientAuthoritative: 1
-  _synchronizeToOwner: 1
-  _compressSmall: 1
-  _synchronizePosition: 0
-  _snapPosition: 0
-  _synchronizeRotation: 0
-  _snapRotation: 0
-  _synchronizeScale: 0
-  _snapScale: 0
---- !u!114 &657886388617413494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2816498479357730332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f40779ebc4fb2f4f9537d4d162bb1d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  _useLocalSpace: 1
-  _intervalType: 0
-  _synchronizeInterval: 0.05
-  _smoothingLoop: 1
-  _interpolationFallbehind: 0.06
-  _extrapolationSpan: 0
-  _teleportThreshold: 0
-  _clientAuthoritative: 1
-  _synchronizeToOwner: 1
-  _compressSmall: 1
-  _synchronizePosition: 0
-  _snapPosition: 0
-  _synchronizeRotation: 0
-  _snapRotation: 0
-  _synchronizeScale: 0
-  _snapScale: 0
-  _target: {fileID: 4919868697167514446}
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &2816545177878007014
 GameObject:
   m_ObjectHideFlags: 0
