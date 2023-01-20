@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
+using Unity.Netcode;
 using UnityEngine;
 
 public class LaunchProjectile : NetworkBehaviour
@@ -20,15 +20,15 @@ public class LaunchProjectile : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasAuthority || healthHandler.IsDead) { return; }
+        if (!IsOwner || healthHandler.IsDead.Value) { return; }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            commandShootBullet();
+            CommandShootBulletClientRpc();
         }
     }
 
-    [Command]
-    private void commandShootBullet()
+    [ClientRpc]
+    private void CommandShootBulletClientRpc()
     {
         GameObject bulletObject = Instantiate(projectile,
             projectTileLaunchPosition.position,
@@ -36,20 +36,21 @@ public class LaunchProjectile : NetworkBehaviour
         Bullet bullet = bulletObject.GetComponent<Bullet>();
         if (bullet != null)
         {
-            bullet.owningPlayer = GetComponent<Player>();
+           // bullet.owningPlayer.Value = GetComponent<Player>();
         }
         bulletObject.GetComponent<Rigidbody>().AddForce(projectTileLaunchPosition.forward * 10);
         if (colliderToIgnore) {
             Debug.Log("Magnus, collider component: " + colliderToIgnore.ToString());
             Physics.IgnoreCollision(bulletObject.GetComponent<Collider>(), colliderToIgnore);
         }
-        
-        NetworkServer.Spawn(bulletObject);
-        RpcBulletSpawned();
+
+        //NetworkServer.Spawn(bulletObject);
+        bullet.GetComponent<NetworkObject>().Spawn(true);
+        BulletSpawnedClientRpc();
     }
 
     [ClientRpc]
-    private void RpcBulletSpawned()
+    private void BulletSpawnedClientRpc()
     {
         GetComponent<AudioSource>().PlayOneShot(GetRandomShootingSound(), 0.7f);
     }

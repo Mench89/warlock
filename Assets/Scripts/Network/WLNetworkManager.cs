@@ -44,9 +44,9 @@ public class WLNetworkManager : NetworkManager
         // Typically Player would be a component you write with syncvars or properties
         Player player = gameobject.GetComponent<Player>();
         int playerId = numPlayers;
-        player.SetPlayerId(playerId, message.name);
+      /*  player.SetPlayerId(playerId, message.name);
         PlayerInfo playerInfo = new PlayerInfo(playerId, message.name);
-        scoarboard.AddPlayerToList(playerInfo);
+        scoarboard.AddPlayerToList(playerInfo); */
     }
 
 }

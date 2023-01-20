@@ -39,7 +39,7 @@ public class FloatingNameLabel : MonoBehaviour
         Player player = GetComponentInParent<Player>();
         if (player != null)
         {
-            return player.playerName;
+            return player.playerName.Value;
         }
         return "Unkown";
     }

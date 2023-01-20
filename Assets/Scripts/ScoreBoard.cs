@@ -12,10 +12,10 @@ public interface IScoreboardPoints
 
 public struct PlayerInfo
 {
-    public int PlayerId;
+    public ulong PlayerId;
     public string Name;
 
-    public PlayerInfo(int playerId, string name)
+    public PlayerInfo(ulong playerId, string name)
     {
         PlayerId = playerId;
         Name = name;
@@ -24,7 +24,7 @@ public struct PlayerInfo
 
 public class Scoreboard : NetworkBehaviour
 {
-    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>(); 
+    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>();
     private readonly List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
 
     public override void OnStartClient()
@@ -77,7 +77,7 @@ public class Scoreboard : NetworkBehaviour
     public void RemovePlayerFromList(Player player)
     {
         if (player == null) { return; }
-        PlayerInfo playerInfo = new(player.playerId, player.playerName);
+        PlayerInfo playerInfo = new(player.OwnerClientId, player.playerName.Value);
         playerScores.Remove(playerInfo);
     }
 
@@ -85,7 +85,7 @@ public class Scoreboard : NetworkBehaviour
     public void AddPointToPlayer(int points, Player player)
     {
         if (player == null) { return; }
-        PlayerInfo playerInfo = new(player.playerId, player.playerName);
+        PlayerInfo playerInfo = new(player.OwnerClientId, player.playerName.Value);
         if (!playerScores.ContainsKey(playerInfo)) {
             playerScores.Add(playerInfo, points);
         } else

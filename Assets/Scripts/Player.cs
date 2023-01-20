@@ -1,4 +1,4 @@
-using Mirror;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Player : NetworkBehaviour, IDrownable
@@ -7,7 +7,7 @@ public class Player : NetworkBehaviour, IDrownable
     {
         Alive, Zombified, Drowned
     }
-    [SyncVar] public string playerName;
+    public NetworkVariable<string> playerName = new("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     [SerializeField] public AudioClip[] fallingSounds;
     [SerializeField] public AudioClip[] deathSounds;
     [SerializeField] public AudioClip[] takingDamageSounds;
@@ -21,32 +21,38 @@ public class Player : NetworkBehaviour, IDrownable
     private float movementFactor = DEFAULT_MOVEMENT_FACTOR;
     private Material DeadMaterial;
     private Rigidbody rigidBody;
-    
+
     // TODO: Make server property
     private bool isFalling;
-    [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
-    [SyncVar] public int playerId;
+    private NetworkVariable<PlayerState> playerState = new(PlayerState.Alive);
+   // [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
         healthHandler = GetComponent<HealthHandler>();
         healthHandler.OnDeathDelegate = OnDeath;
         healthHandler.OnDamageTakenDelegate = OnDamageTaken;
         rigidBody = GetComponent<Rigidbody>();
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
-        if (playerState == PlayerState.Drowned || playerState == PlayerState.Zombified)
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(OwnerClientId);
+        if (playerState.Value == PlayerState.Drowned || playerState.Value == PlayerState.Zombified)
         {
             KillPlayer(false);
         }
     }
 
-    [Client]
-    void Update()
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        Debug.Log("Magnus, Player has spawned!");
+        playerState.OnValueChanged += SetPlayerState;
+    }
+
+    private void Update()
     {
         CheckIfFalling();
-        if (!hasAuthority) { return; }
+        if (!IsOwner) { return; }
     /*    transform.Rotate(Vector3.up, updatedRotationDelta);
         updatedRotationDelta = 0.0f;
         transform.Translate(updatedTranslationDelta);
@@ -54,7 +60,7 @@ public class Player : NetworkBehaviour, IDrownable
         // TODO: We need to change from client authentication
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
-        
+
         transform.Rotate(Vector3.up, horizontal * rotationSpeed * movementFactor * Time.deltaTime);
         transform.Translate(vertical * Vector3.forward * movementSpeed * movementFactor * Time.deltaTime);
 
@@ -63,20 +69,20 @@ public class Player : NetworkBehaviour, IDrownable
         RaisePlayer(raise);
 
         if (Input.GetKeyDown(KeyCode.R)) {
-            if (playerState == PlayerState.Drowned)
+            if (playerState.Value == PlayerState.Drowned)
             {
-                CommandRequestRespawn();
+                RequestRespawnServerRpc();
             }
         }
     }
 
     [ClientRpc]
-    public void SetPlayerId(int playerId, string name)
+    public void SetPlayerIdClientRpc(string name)
     {
-        this.playerId = playerId;
-        playerName = name;
-        Debug.Log("Magnus, player named: " + name + " has joined the game! And player id: " + playerId);
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        //this.playerId = playerId;
+        playerName.Value = name;
+        Debug.Log("Magnus, player named: " + name + " has joined the game! And player id: " + OwnerClientId);
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(OwnerClientId);
     }
 
     private void CheckIfFalling()
@@ -85,7 +91,7 @@ public class Player : NetworkBehaviour, IDrownable
         {
             if (!isFalling)
             {
-                if (!healthHandler.IsDead)
+                if (!healthHandler.IsDead.Value)
                 {
                     GetComponent<AudioSource>().PlayOneShot(GetRandomFallingSound(), 0.7f);
                 }
@@ -103,32 +109,34 @@ public class Player : NetworkBehaviour, IDrownable
         GetComponent<AudioSource>().PlayOneShot(GetRandomDamageSound(), 0.7f);
     }
 
-    [Server]
+// TODO: Enable again
+   // [Server]
     private void OnDeath()
     {
-        playerState = PlayerState.Zombified;
+        playerState.Value = PlayerState.Zombified;
     }
 
-    [Server]
+// TODO: Enable again
+    //[Server]
     public void OnDrown()
     {
-        playerState = PlayerState.Drowned;
+        playerState.Value = PlayerState.Drowned;
     }
 
     private void ResetPlayer()
     {
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(playerId);
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(OwnerClientId);
         movementFactor = DEFAULT_MOVEMENT_FACTOR;
         isFalling = false;
     }
 
     private void KillPlayer(bool playAudio)
     {
-        if (playerState == PlayerState.Alive && playAudio)
+        if (playerState.Value == PlayerState.Alive && playAudio)
         {
             GetComponent<AudioSource>().PlayOneShot(GetRandomDeathSound(), 0.7f);
         }
-        
+
         movementFactor = DEATH_MOVEMENT_FACTOR;
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
     }
@@ -150,18 +158,18 @@ public class Player : NetworkBehaviour, IDrownable
         }
     }
 
-    [Command]
-    private void CommandRequestRespawn()
+    [ServerRpc]
+    private void RequestRespawnServerRpc()
     {
-        if (playerState != PlayerState.Drowned) { return; }
+        if (playerState.Value != PlayerState.Drowned) { return; }
         healthHandler.ResetHealth();
         var startTransform = WLNetworkManager.singleton.GetStartPosition();
-        playerState = PlayerState.Alive;
-        RpcRespawnPlayer(startTransform.position, startTransform.rotation);
+        playerState.Value = PlayerState.Alive;
+        RespawnPlayerClientRpc(startTransform.position, startTransform.rotation);
     }
 
     [ClientRpc]
-    private void RpcRespawnPlayer(Vector3 startPosition, Quaternion startRotation)
+    private void RespawnPlayerClientRpc(Vector3 startPosition, Quaternion startRotation)
     {
         transform.position = startPosition;
         transform.rotation = startRotation;
@@ -243,7 +251,7 @@ public class Player : NetworkBehaviour, IDrownable
         return takingDamageSounds[Random.Range(0, takingDamageSounds.Length - 1)];
     }
 
-    private Material MaterialForPlayerId(int playerId)
+    private Material MaterialForPlayerId(ulong playerId)
     {
         if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken Yellow"); }
         if (playerId == 2) { return Resources.Load<Material>("Materials/Toon Chicken Red"); }

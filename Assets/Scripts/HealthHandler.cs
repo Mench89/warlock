@@ -1,5 +1,5 @@
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public interface IHealthEvents
 {
@@ -9,56 +9,54 @@ public interface IHealthEvents
 public class HealthHandler : NetworkBehaviour
 {
     [SerializeField] public int MaxHealth = 10;
-    [SyncVar(hook = nameof(SetIsDead))] public bool IsDead;
+    public NetworkVariable<bool> IsDead = new(false);
 
     public delegate void OnDamageTaken(int damage);
     public OnDamageTaken OnDamageTakenDelegate;
     public delegate void OnDeath();
     public OnDeath OnDeathDelegate;
 
-    [SyncVar] public int CurrentHealth;
+    public NetworkVariable<int> CurrentHealth = new(1);
 
-    // Start is called before the first frame update
-    void Start()
+    public override void OnNetworkSpawn()
     {
-        CurrentHealth = MaxHealth;
+        base.OnNetworkSpawn();
+        CurrentHealth.Value = MaxHealth;
+        IsDead.OnValueChanged += SetIsDead;
     }
 
-    [Server]
+    //[Server]
     public void ResetHealth()
     {
-        CurrentHealth = MaxHealth;
-        IsDead = false;
+        CurrentHealth.Value = MaxHealth;
+        IsDead.Value = false;
     }
 
-    [Server]
+    //[Server]
     public void ApplyDamage(int damage)
     {
-        CurrentHealth -= damage;
+        CurrentHealth.Value -= damage;
         Debug.Log(damage + " damage taken!");
-        if (CurrentHealth > 0)
+        if (CurrentHealth.Value > 0)
         {
             if (OnDamageTakenDelegate != null)
             {
                 OnDamageTakenDelegate(damage);
             }
         } else {
-            CurrentHealth = 0;
+            CurrentHealth.Value = 0;
             Debug.Log("Object is dead!");
-            IsDead = true;
+            IsDead.Value = true;
         }
     }
 
-    [Server]
+    //[Server]
     public void SetIsDead(bool oldValue, bool newValue)
     {
         // Only report when we've just died
         if (!oldValue && newValue)
         {
-            if (OnDeathDelegate != null)
-            {
-                OnDeathDelegate();
-            }
+            OnDeathDelegate?.Invoke();
         }
     }
 }

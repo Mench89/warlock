@@ -1,10 +1,9 @@
-using Mirror;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Bullet : NetworkBehaviour
 {
-    [SyncVar]
-    public Player owningPlayer;
+    //public NetworkVariable<Player> owningPlayer;
     // Automatically destroy the bullet after some time.
     private const float MAX_TIME_TO_LIVE = 5.0f;
     private const int DAMAGE = 1;
@@ -17,14 +16,13 @@ public class Bullet : NetworkBehaviour
         scoreboard = GameObject.Find("Scoreboard").GetComponent<Scoreboard>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        
+       // owningPlayer = new NetworkVariable<Player>();
     }
-
-
-    [ServerCallback]
+// TODO: FIX!!!!
+/*
+    [ServerRpc]
     void OnCollisionEnter(Collision collision)
     {
         GameObject otherObj = collision.gameObject;
@@ -39,15 +37,15 @@ public class Bullet : NetworkBehaviour
                 var isAlive = !healthHandler.IsDead;
                 healthHandler.ApplyDamage(DAMAGE);
                 // TODO: Remove later
-                scoreboard.AddPointToPlayer(1, owningPlayer);
+                scoreboard.AddPointToPlayer(1, owningPlayer.Value);
                 // Check for killing blow
                 if (healthHandler.IsDead && isAlive)
                 {
                     Debug.Log("Killing blow!");
-                    scoreboard.AddPointToPlayer(1, owningPlayer);
+                    scoreboard.AddPointToPlayer(1, owningPlayer.Value);
                 }
             }
             Destroy(gameObject);
         }
-    }
+    } */
 }
