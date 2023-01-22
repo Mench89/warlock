@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
+using Unity.Collections;
 
 public interface IScoreboardPoints
 {
@@ -10,32 +11,41 @@ public interface IScoreboardPoints
     public void AddPointsToPlayer(PlayerInfo player, int points);
 }
 
-public struct PlayerInfo
+public struct PlayerInfo: INetworkSerializable
 {
     public ulong PlayerId;
-    public string Name;
+    public FixedString64Bytes Name;
 
-    public PlayerInfo(ulong playerId, string name)
+    public PlayerInfo(ulong playerId, FixedString64Bytes name)
     {
         PlayerId = playerId;
         Name = name;
+    }
+
+    void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
+    {
+        serializer.SerializeValue(ref PlayerId);
+        serializer.SerializeValue(ref Name);
     }
 }
 
 public class Scoreboard : NetworkBehaviour
 {
-    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>();
+
+    public readonly NetworkVariable<Dictionary<PlayerInfo, int>> playerScores = new ();
     private readonly List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
 
-    public override void OnStartClient()
+    public override void OnNetworkSpawn()
     {
-        base.OnStartClient();
-        playerScores.Callback += OnPlayerScoreChanged;
+        base.OnNetworkSpawn();
+        playerScores.OnValueChanged += OnPlayerScoreChanged;
     }
 
-    void OnPlayerScoreChanged(SyncDictionary<PlayerInfo, int>.Operation op, PlayerInfo key, int item)
+    void OnPlayerScoreChanged(Dictionary<PlayerInfo, int> oldList, Dictionary<PlayerInfo, int> newList)
     {
-        switch (op)
+
+// TODO: Update
+        /*switch (op)
         {
             case SyncDictionary<PlayerInfo, int>.Operation.OP_ADD:
                 PlayerAdded(key, item);
@@ -48,7 +58,7 @@ public class Scoreboard : NetworkBehaviour
                 break;
             case SyncDictionary<PlayerInfo, int>.Operation.OP_CLEAR:
                 break;
-        }
+        } */
     }
 
     public void AddScoreboardPointsListener(IScoreboardPoints listener)
@@ -63,34 +73,32 @@ public class Scoreboard : NetworkBehaviour
         scoreboardListeners.Remove(listener);
     }
 
-    [Server]
-    public void AddPlayerToList(PlayerInfo playerInfo)
+    [ServerRpc]
+    public void AddPlayerToListServerRpc(PlayerInfo playerInfo)
     {
         const int initialPoints = 0;
-        if (!playerScores.ContainsKey(playerInfo))
+        if (!playerScores.Value.ContainsKey(playerInfo))
         {
-            playerScores.Add(playerInfo, initialPoints);
+            playerScores.Value.Add(playerInfo, initialPoints);
         }
     }
 
-    [Server]
-    public void RemovePlayerFromList(Player player)
+    [ServerRpc]
+    public void RemovePlayerFromListServerRpc(ulong ownerClientId, string playerName)
     {
-        if (player == null) { return; }
-        PlayerInfo playerInfo = new(player.OwnerClientId, player.playerName.Value);
-        playerScores.Remove(playerInfo);
+        PlayerInfo playerInfo = new(ownerClientId, playerName);
+        playerScores.Value.Remove(playerInfo);
     }
 
-    [Server]
-    public void AddPointToPlayer(int points, Player player)
+    [ServerRpc]
+    public void AddPointToPlayerServerRpc(int points, ulong ownerClientId, string playerName)
     {
-        if (player == null) { return; }
-        PlayerInfo playerInfo = new(player.OwnerClientId, player.playerName.Value);
-        if (!playerScores.ContainsKey(playerInfo)) {
-            playerScores.Add(playerInfo, points);
+        PlayerInfo playerInfo = new(OwnerClientId, playerName);
+        if (!playerScores.Value.ContainsKey(playerInfo)) {
+            playerScores.Value.Add(playerInfo, points);
         } else
         {
-            playerScores[playerInfo] += points;
+            playerScores.Value[playerInfo] += points;
         }
     }
 

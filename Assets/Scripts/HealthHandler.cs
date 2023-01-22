@@ -22,18 +22,18 @@ public class HealthHandler : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         CurrentHealth.Value = MaxHealth;
-        IsDead.OnValueChanged += SetIsDead;
+        IsDead.OnValueChanged += SetIsDeadServerRpc;
     }
 
-    //[Server]
-    public void ResetHealth()
+    [ServerRpc]
+    public void ResetHealthServerRpc()
     {
         CurrentHealth.Value = MaxHealth;
         IsDead.Value = false;
     }
 
-    //[Server]
-    public void ApplyDamage(int damage)
+    [ServerRpc]
+    public void ApplyDamageServerRpc(int damage)
     {
         CurrentHealth.Value -= damage;
         Debug.Log(damage + " damage taken!");
@@ -50,8 +50,8 @@ public class HealthHandler : NetworkBehaviour
         }
     }
 
-    //[Server]
-    public void SetIsDead(bool oldValue, bool newValue)
+    [ServerRpc]
+    public void SetIsDeadServerRpc(bool oldValue, bool newValue)
     {
         // Only report when we've just died
         if (!oldValue && newValue)

@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Unity.Netcode;
 
-public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
+public class ScoreboardViewController : NetworkBehaviour, IScoreboardPoints
 {
     public struct ScoreItem
     {
@@ -38,17 +39,18 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
 
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         scoreboard.AddScoreboardPointsListener(this);
         PopulateListView();
     }
 
     private void PopulateListView()
     {
-        int itemCount = scoreboard.playerScores.Count;
+        int itemCount = scoreboard.playerScores.Value.Count;
         items = new List<ScoreItem>(itemCount);
-        foreach (var item in scoreboard.playerScores)
+        foreach (var item in scoreboard.playerScores.Value)
         {
             Debug.Log("Added player to scoreboard:" + item.Key.Name);
             items.Add(new ScoreItem(item.Key, item.Value));
@@ -61,7 +63,7 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
     private void BindItem(VisualElement e, int index)
     {
         Label nameLabel = e.Q<Label>("NameLabel");
-        nameLabel.text = items[index].PlayerInfo.Name;
+        nameLabel.text = items[index].PlayerInfo.Name.ToString();
         Label pointsLabel = e.Q<Label>("PointsLabel");
         pointsLabel.text = items[index].Score.ToString();
     }
@@ -72,7 +74,7 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
     public void PlayerAdded(PlayerInfo player, int points) {
         PopulateListView();
     }
-    
+
     public void PlayerRemvoved(PlayerInfo player) {
         PopulateListView();
     }

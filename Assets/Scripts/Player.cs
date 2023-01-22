@@ -28,7 +28,7 @@ public class Player : NetworkBehaviour, IDrownable
    // [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
 
     // Start is called before the first frame update
-    private void Start()
+    private void OnClientConnect()
     {
         DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
         healthHandler = GetComponent<HealthHandler>();
@@ -47,6 +47,16 @@ public class Player : NetworkBehaviour, IDrownable
         base.OnNetworkSpawn();
         Debug.Log("Magnus, Player has spawned!");
         playerState.OnValueChanged += SetPlayerState;
+                DeadMaterial = Resources.Load<Material>("Materials/Toon Chicken Dead");
+        healthHandler = GetComponent<HealthHandler>();
+        healthHandler.OnDeathDelegate = OnDeath;
+        healthHandler.OnDamageTakenDelegate = OnDamageTaken;
+        rigidBody = GetComponent<Rigidbody>();
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = MaterialForPlayerId(OwnerClientId);
+        if (playerState.Value == PlayerState.Drowned || playerState.Value == PlayerState.Zombified)
+        {
+            KillPlayer(false);
+        }
     }
 
     private void Update()
@@ -109,15 +119,13 @@ public class Player : NetworkBehaviour, IDrownable
         GetComponent<AudioSource>().PlayOneShot(GetRandomDamageSound(), 0.7f);
     }
 
-// TODO: Enable again
-   // [Server]
+    //[ServerRpc]
     private void OnDeath()
     {
         playerState.Value = PlayerState.Zombified;
     }
 
-// TODO: Enable again
-    //[Server]
+//    [ServerRpc]
     public void OnDrown()
     {
         playerState.Value = PlayerState.Drowned;
@@ -162,10 +170,10 @@ public class Player : NetworkBehaviour, IDrownable
     private void RequestRespawnServerRpc()
     {
         if (playerState.Value != PlayerState.Drowned) { return; }
-        healthHandler.ResetHealth();
-        var startTransform = WLNetworkManager.singleton.GetStartPosition();
+        healthHandler.ResetHealthServerRpc();
+        //var startTransform = WLNetworkManager.singleton.GetStartPosition();
         playerState.Value = PlayerState.Alive;
-        RespawnPlayerClientRpc(startTransform.position, startTransform.rotation);
+        //RespawnPlayerClientRpc(startTransform.position, startTransform.rotation);
     }
 
     [ClientRpc]
@@ -253,10 +261,10 @@ public class Player : NetworkBehaviour, IDrownable
 
     private Material MaterialForPlayerId(ulong playerId)
     {
-        if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken Yellow"); }
-        if (playerId == 2) { return Resources.Load<Material>("Materials/Toon Chicken Red"); }
-        if (playerId == 3) { return Resources.Load<Material>("Materials/Toon Chicken Blue"); }
-        if (playerId == 4) { return Resources.Load<Material>("Materials/Toon Chicken Green"); }
+        if (playerId == 0) { return Resources.Load<Material>("Materials/Toon Chicken Yellow"); }
+        if (playerId == 1) { return Resources.Load<Material>("Materials/Toon Chicken Red"); }
+        if (playerId == 2) { return Resources.Load<Material>("Materials/Toon Chicken Blue"); }
+        if (playerId == 3) { return Resources.Load<Material>("Materials/Toon Chicken Green"); }
         return Resources.Load<Material>("Materials/Toon Chicken White");
     }
 }

@@ -1,9 +1,8 @@
 using UnityEngine;
-using Mirror;
+using Unity.Netcode;
 
 public class WaterDrownHandler : NetworkBehaviour
 {
-    [ServerCallback]
     private void OnCollisionEnter(Collision collision)
     {
         IDrownable drownable = collision.gameObject.GetComponent<IDrownable>();
