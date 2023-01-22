@@ -1,6 +1,6 @@
-using Mirror;
+using Unity.Netcode;
 
-public struct CreatePlayerMessage: NetworkMessage
+public struct CreatePlayerMessage
 {
     public string name;
 }
