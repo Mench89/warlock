@@ -24,7 +24,7 @@ public struct PlayerInfo
 
 public class Scoreboard : NetworkBehaviour
 {
-    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>(); 
+    public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>();
     private readonly List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
 
     public override void OnStartClient()

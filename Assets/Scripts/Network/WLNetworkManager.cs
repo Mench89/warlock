@@ -46,7 +46,7 @@ public class WLNetworkManager : NetworkManager
         int playerId = numPlayers;
         player.SetPlayerId(playerId, message.name);
         PlayerInfo playerInfo = new PlayerInfo(playerId, message.name);
-        scoarboard.AddPlayerToList(playerInfo);
+        //scoarboard.AddPlayerToList(playerInfo);
     }
 
 }

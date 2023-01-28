@@ -40,13 +40,13 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
 
     private void Start()
     {
-        scoreboard.AddScoreboardPointsListener(this);
+        //scoreboard.AddScoreboardPointsListener(this);
         PopulateListView();
     }
 
     private void PopulateListView()
     {
-        int itemCount = scoreboard.playerScores.Count;
+      /*  int itemCount = scoreboard.playerScores.Count;
         items = new List<ScoreItem>(itemCount);
         foreach (var item in scoreboard.playerScores)
         {
@@ -55,7 +55,7 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
         }
 
         listView.itemsSource = items;
-        listView.Rebuild();
+        listView.Rebuild(); */
     }
 
     private void BindItem(VisualElement e, int index)
@@ -72,7 +72,7 @@ public class ScoreboardViewController : MonoBehaviour, IScoreboardPoints
     public void PlayerAdded(PlayerInfo player, int points) {
         PopulateListView();
     }
-    
+
     public void PlayerRemvoved(PlayerInfo player) {
         PopulateListView();
     }

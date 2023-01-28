@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   listItemAsset: {fileID: 9197481963319205126, guid: 76e6e817035394e70bc5e77773d39377, type: 3}
-  scoreboard: {fileID: 838175810}
+  scoreboard: {fileID: 0}
 --- !u!1001 &298804792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1019,33 +1019,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 727466931868773961, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: sceneId
-      value: 3985468582
-      objectReference: {fileID: 0}
-    - target: {fileID: 1863852646693745135, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: sceneId
-      value: 1383276332
-      objectReference: {fileID: 0}
     - target: {fileID: 2000405098954624431, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
       propertyPath: sceneId
       value: 3942811729
-      objectReference: {fileID: 0}
-    - target: {fileID: 2757967711109178656, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2757967711109178656, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 023bb6bfb37b5334f82b6b3ac607c538, type: 2}
-    - target: {fileID: 2808137952961599094, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6431e4fb1e8e14875839d80d0b73101c, type: 2}
-    - target: {fileID: 2815487459390391217, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2816498479357730332, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
       propertyPath: m_Name
@@ -1095,10 +1071,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6549782204377180006, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
-      propertyPath: nameToShow
-      value: "H\xF6na b\xF6na"
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8df079499ca84154a5f5e84e6be3f4a, type: 3}
 --- !u!1 &838175809
@@ -1111,7 +1083,7 @@ GameObject:
   m_Component:
   - component: {fileID: 838175812}
   - component: {fileID: 838175811}
-  - component: {fileID: 838175810}
+  - component: {fileID: 838175813}
   m_Layer: 0
   m_Name: Scoreboard
   m_TagString: Untagged
@@ -1119,20 +1091,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &838175810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 838175809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2175213be450c4030befaeac9d07fd30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
 --- !u!114 &838175811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1165,6 +1123,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &838175813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838175809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2175213be450c4030befaeac9d07fd30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,7 +1379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8141df78c2f0c4156b199225398d8217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
+  dontDestroyOnLoad: 0
   runInBackground: 1
   autoStartServerBuild: 1
   serverTickRate: 32
@@ -1422,7 +1394,7 @@ MonoBehaviour:
   playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 3614962556155633297, guid: 6668381634ab9c44ab01d47b85b0da06, type: 3}
-  scoarboard: {fileID: 838175810}
+  scoarboard: {fileID: 0}
   playerName: Player name
 --- !u!4 &1436514455 stripped
 Transform:
