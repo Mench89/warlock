@@ -26,11 +26,15 @@ public class Scoreboard : NetworkBehaviour
 {
     public readonly SyncDictionary<PlayerInfo, int> playerScores = new SyncDictionary<PlayerInfo, int>();
     private readonly List<IScoreboardPoints> scoreboardListeners = new List<IScoreboardPoints>();
+    [SerializeField]
+    private ScoreboardViewController scoreboardViewController;
 
     public override void OnStartClient()
     {
         base.OnStartClient();
         playerScores.Callback += OnPlayerScoreChanged;
+        AddScoreboardPointsListener(scoreboardViewController);
+        scoreboardViewController.scoreboard = this;
     }
 
     void OnPlayerScoreChanged(SyncDictionary<PlayerInfo, int>.Operation op, PlayerInfo key, int item)
