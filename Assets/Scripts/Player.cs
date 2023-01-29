@@ -21,7 +21,7 @@ public class Player : NetworkBehaviour, IDrownable
     private float movementFactor = DEFAULT_MOVEMENT_FACTOR;
     private Material DeadMaterial;
     private Rigidbody rigidBody;
-    
+
     // TODO: Make server property
     private bool isFalling;
     [SyncVar(hook = nameof(SetPlayerState))] private PlayerState playerState = PlayerState.Alive;
@@ -46,7 +46,7 @@ public class Player : NetworkBehaviour, IDrownable
     void Update()
     {
         CheckIfFalling();
-        if (!hasAuthority) { return; }
+        if (!isOwned) { return; }
     /*    transform.Rotate(Vector3.up, updatedRotationDelta);
         updatedRotationDelta = 0.0f;
         transform.Translate(updatedTranslationDelta);
@@ -54,7 +54,7 @@ public class Player : NetworkBehaviour, IDrownable
         // TODO: We need to change from client authentication
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
-        
+
         transform.Rotate(Vector3.up, horizontal * rotationSpeed * movementFactor * Time.deltaTime);
         transform.Translate(vertical * Vector3.forward * movementSpeed * movementFactor * Time.deltaTime);
 
@@ -128,7 +128,7 @@ public class Player : NetworkBehaviour, IDrownable
         {
             GetComponent<AudioSource>().PlayOneShot(GetRandomDeathSound(), 0.7f);
         }
-        
+
         movementFactor = DEATH_MOVEMENT_FACTOR;
         gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material = DeadMaterial;
     }

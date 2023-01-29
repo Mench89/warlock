@@ -20,15 +20,15 @@ public class LaunchProjectile : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasAuthority || healthHandler.IsDead) { return; }
+        if (!isOwned || healthHandler.IsDead) { return; }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            commandShootBullet();
+            CommandShootBullet();
         }
     }
 
     [Command]
-    private void commandShootBullet()
+    private void CommandShootBullet()
     {
         GameObject bulletObject = Instantiate(projectile,
             projectTileLaunchPosition.position,
@@ -43,7 +43,7 @@ public class LaunchProjectile : NetworkBehaviour
             Debug.Log("Magnus, collider component: " + colliderToIgnore.ToString());
             Physics.IgnoreCollision(bulletObject.GetComponent<Collider>(), colliderToIgnore);
         }
-        
+
         NetworkServer.Spawn(bulletObject);
         RpcBulletSpawned();
     }
